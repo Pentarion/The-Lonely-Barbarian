@@ -1,4 +1,4 @@
-1. Install python 3.9 first.
+1. Install python (I used 3.9 but any version is prbably fine) first.
 2. Add install directory to PATH
 3. Extract zip somewhere, and open that directory in terminal.
 4. Type:
