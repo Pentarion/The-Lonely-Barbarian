@@ -4,17 +4,9 @@ import pygame  # type: ignore
 import sys
 import time
 import textwrap
-import subprocess
 
 # Initialize pygame mixer early in the script
 pygame.mixer.init()
-
-# Function to set full screen
-def set_full_screen():
-    if os.name == 'nt':  # Windows
-        os.system('mode con: cols=150 lines=40')  # Adjust console size for Windows
-    else:  # Linux/Mac
-        print("\033[8;40;150t")  # Attempt to resize terminal (may not work in all terminals)
 
 # Function to clear the screen
 def clear_screen(lines_after_clear=5):
@@ -43,11 +35,15 @@ def center_text(text):
 # Function to initialize and play background music
 def play_music():
     try:
-        pygame.mixer.music.load("1.mp3") 
-        pygame.mixer.music.set_volume(0.5)  # Set volume (0.0 to 1.0)
+        # Update the path to handle PyInstaller's bundle environment
+        base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+        music_path = os.path.join(base_path, "1.mp3")
+        pygame.mixer.music.load(music_path) 
+        pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play(-1)  # Loop the music indefinitely
     except Exception as e:
         print(f"Error loading or playing music: {e}")
+
 
 # Function to slow text down while playing
 def slow_print(text, delay=0.055, width=30):
@@ -173,6 +169,21 @@ def story():
         path_text = "the mysterious forest, where ancient trees whisper sexy secrets, and magic lingers in the air."
     elif choice == "3":
         path_text = "the bustling city, where the sounds of life being created echo in narrow streets and the scent of spice fills the air."
+    elif choice == "8":  # Secret option
+        clear_screen(lines_after_clear=5)
+        slow_print("Yahaha! You found me.", delay=0.1)
+        print()
+        ascii_art = [
+            "    ^    ",
+            "   ^ ^   ",
+            "  ^^^^^  ",
+            " ^  ^  ^ ",
+            "^^^^^^^^^ ",
+        ]
+        for line in ascii_art:
+            print(center_text(line))
+        input("\nPress Enter to exit...")
+        sys.exit()  # Exit the game entirely
     else:
         clear_screen(lines_after_clear=5)
         slow_print("Invalid choice. Starting over...\n")
@@ -181,6 +192,25 @@ def story():
         return
 
     journey(path_text)
+
+# Don't look at me
+def secret():
+    """
+    Secret flow when the player chooses the hidden option.
+    """
+    clear_screen(lines_after_clear=5)
+    slow_print("Congratulations, adventurer!")
+    slow_print("You've completed the secret scavenger hunt hidden within The Lonely Barbarian.")
+    print()
+    slow_print("This is a reward reserved for the sharpest minds and most curious souls.")
+    print()
+    slow_print("To claim your prize, tell the creator the passphrase:")
+    slow_print("\"You love me more.\"")
+    print()
+    slow_print("Thank you for playing and uncovering the hidden path!")
+    input("\nPress Enter to return to the main story...")
+    story()  # Return to the main story flow
+
 
 def journey(path_text):
     clear_screen(lines_after_clear=5)
@@ -214,6 +244,7 @@ def encounter_1(path_text):
         slow_print("but you long for him to dominate you.") 
         slow_print("His leg sweeps yours out from underneath you,")
         slow_print("but he catches you so you don't fall too quickly.")
+        print()
         slow_print("Rorik pins you down with his entire body and you involuntarily gasp.") 
         slow_print("You rarely allow a man to best you in such a way.") 
         slow_print("His mouth roughly meets yours and soon he rides you until you see stars.\n")
@@ -340,6 +371,7 @@ def encounter_4(path_text):
 
 # Ending
 def ending(path_text):
+    global conquests
     clear_screen(lines_after_clear=5)
     location = format_location_sentence(path_text)
     slow_print(f"Your adventure through the {location}") 
@@ -371,11 +403,29 @@ def ending(path_text):
         slow_print("\nFind me and a secret you'll learn!\n")
         print()
         print()
+
+    # Prompt for playing again if conquests are 0-3
+    if conquests <= 3:
+        while True:
+            play_again = input("\nWould you like to play again? (Y/N): ").strip().lower()
+            if play_again == 'y':
+                # Reset conquests and start the story again
+                conquests = 0
+                story()
+                return
+            elif play_again == 'n':
+                break
+            else:
+                slow_print("Invalid input. Please enter 'Y' or 'N'.")
+
+    # End the game
     slow_print("\nThank you for playing The Lonely Barbarian!")
     input("\nPress Enter to exit.")
 
+
 # Main function
 def main():
+    clear_screen()
     password_prompt()
     title_screen()
     story()

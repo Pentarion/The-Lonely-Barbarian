@@ -10,7 +10,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=['termios', 'pwd'],
+    excludes=['tkinter', 'numpy', 'OpenGL', 'setuptools', 'pkg_resources', '_bootlocale'],
     noarchive=False,
     optimize=0,
 )
