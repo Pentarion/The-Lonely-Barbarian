@@ -1,3 +1,5 @@
+Release 1.0 is current version, use that instead of master.
+
 1. Install python (I used 3.9 but any version is probably fine) first.
 2. Add install directory to PATH
 3. Extract zip somewhere, and open that directory in terminal.
